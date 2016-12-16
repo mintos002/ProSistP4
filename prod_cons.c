@@ -12,6 +12,7 @@
 #define INTPROD 20
 #define INTCONS 20
 #define NTHREADS 100
+
 int ww;
 void *Productor( void *arg ) // Funcion productor
 {
@@ -32,9 +33,9 @@ void *Productor( void *arg ) // Funcion productor
   else {
    printf("OP: %d. Se ha INSERTADO el numero: %d\n --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- \n", w, ins);
    //   print(buffer);
-   printf("CONTADOR: %d",num_elementos(buffer));
+   printf("CONTADOR: %d\n",num_elementos(buffer));
   }
-  usleep(1000000); // Retraso 2seg
+  usleep(1000000); // Retraso 1seg
  }
 }
 
@@ -54,9 +55,10 @@ void *Consumidor( void *arg )  // Funcion consumidor
 
   else {
   printf("OP: %d. Se ha EXTRAIDO el numero: %d\n --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- \n", w, val);
-  print(buffer);
+  //print(buffer);
+  printf("CONTADOR: %d\n",num_elementos(buffer));
   }
-  usleep(4000000); // Retraso 4 seg
+  usleep(2000000); // Retraso 2seg
  }
 }
 

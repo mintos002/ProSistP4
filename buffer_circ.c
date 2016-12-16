@@ -4,11 +4,8 @@
 #include <semaphore.h>
 #include "buffer_circ.h"
 
-                                              
-sem_t buffer_lock, items, huecos;
-                                              
-
 struct Buffer_Circ {  // Definir estructura Buffer_Circ
+ //pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Iniciar mutex
  int buffer[BUFSIZE];
  int bufIN, bufOUT;
  int contador;
@@ -17,11 +14,7 @@ struct Buffer_Circ {  // Definir estructura Buffer_Circ
 // Iniciar bufer
 void initbuffer( struct Buffer_Circ *buff) {
  int i;
-                                               
- sem_init (&buffer_lock,0,1);
- sem_init(&items,0,0);
- sem_init(&huecos,0,BUFSIZE);
-                                               
+                                                                                              
  for(i=0; i<BUFSIZE; i++){
   (*buff).buffer[i] = -1;
   }
@@ -36,47 +29,34 @@ int get_item(int* x, struct Buffer_Circ *buff) {
 
  if( (*buff).contador > 0){           // Si el buffer no esta vacio
                                   
-   sem_wait(&items);
-   sem_wait(&buffer_lock);
+   pthread_mutex_lock(&mutex); // Bloquear mutex
                                    
    *x = (*buff).buffer[nxtOUT];       // Asignar resultado a x
    (*buff).bufOUT = (nxtOUT + 1) % BUFSIZE; // Actualizar bufOUT
    (*buff).contador = (*buff).contador - 1; // Actualizar contador
                                             
-   sem_post(&buffer_lock);
-   sem_post(&huecos);
+   pthread_mutex_unlock(&mutex); // Desbloquear mutex
                                           
    return 0;                         // Devolver 0 -> OK
   }
  else {                              // Si buffer esta lleno
   return -1;                         // Devolver -1 -> NOT OK
  }
-                                              
-
-                                              
 }
 
 // Put item
 int put_item(int x, struct Buffer_Circ *buff) {
  int nxtIN = (*buff).bufIN % BUFSIZE;
-                                              
 
  if( (*buff).contador < BUFSIZE ){   // Si el buffer esta vacio
 
-    
-  sem_wait(&huecos);
-  sem_wait(&buffer_lock);
-                                          
+  pthread_mutex_lock(&mutex); // Desbloquear mutex
 
   (*buff).buffer[nxtIN] = x;        // Insertar x
   (*buff).bufIN = (nxtIN + 1) % BUFSIZE;// Actualizar bufIN
   (*buff).contador = (*buff).contador + 1; // Actualizar contador
-  
-
-                                              
-  sem_post(&buffer_lock);
-  sem_post(&items);
-                                              
+                         
+  pthread_mutex_unlock(&mutex); // Desbloquear mutex
 
   return 0;                         // Devolver 0 -> OK
  }
