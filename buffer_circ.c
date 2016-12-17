@@ -11,14 +11,17 @@ struct Buffer_Circ {  // Definir estructura Buffer_Circ
 
 // Iniciar bufer
 void initbuffer( struct Buffer_Circ *buff) {
-  int i;
-                                                                                             
+  /*CON MUTEX:*/                              //-------------------------------
+  pthread_mutex_lock(&buffer_lock);           // Bloquear mutex
+  int i;                                                                               
   for(i=0; i<BUFSIZE; i++){
     (*buff).buffer[i] = -1;
   }
     (*buff).bufIN = 0;
     (*buff).bufOUT = 0;
     (*buff).contador = 0;
+    /*CON MUTEX:*/                         
+    pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
 }
 
 // Get item
@@ -70,27 +73,42 @@ int put_item(int x, struct Buffer_Circ *buff) {
 }
 
 // Consultar si una variable Buffer_Circ está vacía
-char* bc_vacio(struct Buffer_Circ *buff){
+bool bc_vacio(struct Buffer_Circ *buff){
+  /*CON MUTEX:*/                              //------------------------------
+  pthread_mutex_lock(&buffer_lock);           // Bloquear mutex
   if( (*buff).contador == 0 ) {
-    return "True";
+    /*CON MUTEX:*/                            //----------------------------                        
+    pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
+    return true;
+
   }
   else {
-    return "False";
+    /*CON MUTEX:*/                            //----------------------------                        
+    pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
+    return false;
   }
 }
 
 // Consultar si una variable Buffer_Circ está lleno
-char* bc_lleno(struct Buffer_Circ *buff){
+bool bc_lleno(struct Buffer_Circ *buff){
+  /*CON MUTEX:*/                              //------------------------------
+  pthread_mutex_lock(&buffer_lock);           // Bloquear mutex
   if( (*buff).contador == BUFSIZE ) {
-    return "True";
+    /*CON MUTEX:*/                            //----------------------------                        
+    pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
+    return true;
   }
   else {
-    return "False";
+    /*CON MUTEX:*/                            //----------------------------                        
+    pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
+    return false;
   }
 }
 
 //PRINT
 void print (struct Buffer_Circ *buff){
+  /*CON MUTEX:*/                              //------------------------------
+  pthread_mutex_lock(&buffer_lock);           // Bloquear mutex
   // printf("OK? = %d\n", ok );
   printf("bufIN = %d\n", (*buff).bufIN );
   printf("bufOUT = %d\n", (*buff).bufOUT );
@@ -100,9 +118,15 @@ void print (struct Buffer_Circ *buff){
     printf("Posicion %d valor: %d\n", i, (*buff).buffer[i] );
   }
   printf("------------------------------------------------------------\n");
+  /*CON MUTEX:*/                            //----------------------------                        
+  pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
 }
 
 // Devolver número de elementos
 int num_elementos (struct Buffer_Circ *buff){
-  return buff->contador;
+ /*CON MUTEX:*/                            //------------------------------
+ pthread_mutex_lock(&buffer_lock);         // Bloquear mutex
+ /*CON MUTEX:*/                            //----------------------------                        
+ pthread_mutex_unlock(&buffer_lock);       // Desbloquear mutex
+ return buff->contador;
 }

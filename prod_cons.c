@@ -6,10 +6,11 @@
 #include <semaphore.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include "buffer_circ.c"
 
 #define INTPROD 20
-#define INTCONS 20
+#define INTCONS 25
 #define NTHREADS 50
 
 sem_t mutex, items, huecos;           // Definir semaforos
@@ -42,6 +43,7 @@ void *Productor( void *arg )          // Funcion productor
       printf("OP: %d. Se ha INSERTADO el numero: %d\n", w, ins);
       //   print(buffer);
       printf("CONTADOR: %d\n", num_elementos(buffer));
+//      printf("Buffer lleno %s", bc_lleno(buffer) ? "true" : "false");
       printf(" --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- \n");
       sem_post(&mutex); 
       sem_post(&items); 
@@ -75,6 +77,7 @@ void *Consumidor( void *arg )         // Funcion consumidor
     printf("OP: %d. Se ha EXTRAIDO el numero: %d\n", w, val);
     //print(buffer);
     printf("CONTADOR: %d\n", num_elementos(buffer));
+//    printf("Buffer vacio? %s\n", bc_vacio(buffer) ? "true" : "false");
     printf(" --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- \n");
     sem_post(&mutex);
     sem_post(&huecos);
