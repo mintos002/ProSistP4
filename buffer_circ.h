@@ -13,5 +13,6 @@ char* bc_lleno (struct Buffer_Circ *buff);
 void print (struct Buffer_Circ *buff);
 int num_elementos (struct Buffer_Circ *buff);
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Iniciar mutex
+pthread_mutex_t buffer_lock = PTHREAD_MUTEX_INITIALIZER; // Iniciar mutex
+
 #endif //
